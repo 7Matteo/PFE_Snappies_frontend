@@ -20,4 +20,4 @@ steps:
     npm install
     ng build --configuration production
   displayName: 'npm install and build'
-  workingDirectory: '$(Build.SourcesDirectory)/projectFolderName'
+  workingDirectory: '$(Build.SourcesDirectory)/my-app'
