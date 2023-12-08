@@ -8,12 +8,16 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FormsModule } from '@angular/forms';
 
 import { HttpClientModule } from '@angular/common/http';
+import { AdminComponent } from './admin.component';
+
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    AdminComponent
   ],
   imports: [
     BrowserModule,
@@ -24,7 +28,7 @@ import { HttpClientModule } from '@angular/common/http';
       // or after 30 seconds (whichever comes first).
       registrationStrategy: 'registerWhenStable:30000'
     }),
-
+    FormsModule,
     MatMenuModule,
     MatButtonModule,
     BrowserAnimationsModule,
