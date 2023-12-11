@@ -1,5 +1,5 @@
 import { Component, OnInit  } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { TokenService } from '../services/token.service';
 
@@ -12,9 +12,8 @@ export class CreateCommandFormComponent {
   isConnected: any;
   commandForm = new FormGroup({
     client: new FormControl('', Validators.required),
-    article: new FormControl('', Validators.required),
     tournee: new FormControl('', Validators.required),
-  });
+  }) as FormGroup;
   public nbSelects : any[] = [{type : "select"}]
   public articles: any[] = [{name : "pas de données"}];
   public tournees: any[] = [{name : "pas de données"}];
@@ -24,14 +23,26 @@ export class CreateCommandFormComponent {
   
 
   ajouter1SelectArticle(): void {
-    this.nbSelects.push({type : "select"})
+    this.commandForm.addControl(`article${this.nbSelects.length}`, new FormControl('', Validators.required));
+    this.commandForm.addControl(`nbArticles${this.nbSelects.length}`, new FormControl('', Validators.required));
+    this.nbSelects.push({type : "select"});
+    
+    console.log(this.nbSelects.length);
+    
   }
 
   enlever1SelectArticle(): void {
-    if(this.nbSelects.length>1)this.nbSelects.pop();
+    if(this.nbSelects.length>1){
+      this.nbSelects.pop();
+      this.commandForm.removeControl(`article${this.nbSelects.length}`)
+      this.commandForm.removeControl(`nbArticles${this.nbSelects.length}`);
+    }
+    console.log(this.nbSelects.length);
+    
   }
-
   ngOnInit(): void {
+    this.commandForm.addControl(`article0`, new FormControl('', Validators.required));
+    this.commandForm.addControl(`nbArticles0`, new FormControl('', Validators.required));
     this.getArticles();
     this.getClients();
     this.getTournees();
@@ -41,9 +52,14 @@ export class CreateCommandFormComponent {
   }
 
   getArticles(): void {
-    const apiUrl = 'http://localhost:8000/commande/getAll';
+    const token = this.tokenService.getToken();
+    const apiUrl = 'http://localhost:8000/articles/get_all_articles';
 
-    this.http.get<any[]>(apiUrl)
+    this.http.get<any[]>(apiUrl, {
+      headers: {
+        'Authorization': 'Token ' + token 
+      }
+    })
       .subscribe(
         (data) => {
           this.articles = data;
@@ -55,9 +71,14 @@ export class CreateCommandFormComponent {
   }
 
   getTournees(): void {
-    const apiUrl = 'https://exemple.com/api/objets';
+    const token = this.tokenService.getToken();
+    const apiUrl = 'http://localhost:8000/tournee/get_all_tournee';
 
-    this.http.get<any[]>(apiUrl)
+    this.http.get<any[]>(apiUrl, {
+      headers: {
+        'Authorization': 'Token ' + token 
+      }
+    })
       .subscribe(
         (data) => {
           this.tournees = data;
@@ -69,9 +90,14 @@ export class CreateCommandFormComponent {
   }
 
   getClients(): void {
-    const apiUrl = 'https://exemple.com/api/objets';
+    const token = this.tokenService.getToken();
+    const apiUrl = 'http://localhost:8000/client/get_all_clients_free';
 
-    this.http.get<any[]>(apiUrl)
+    this.http.get<any[]>(apiUrl, {
+      headers: {
+        'Authorization': 'Token ' + token 
+      }
+    })
       .subscribe(
         (data) => {
           this.clients = data;
@@ -83,16 +109,41 @@ export class CreateCommandFormComponent {
   }
   
   onSubmit() {
-    if (this.commandForm.valid) {
+    const token = this.tokenService.getToken();
+    
+    if (true) {
+
+      let tabArticles = [];
+
+      for (let i = 0; i < this.nbSelects.length; i++) {
+        const articleObj = JSON.parse(this.commandForm.value[`article${i}`]);
+        if(articleObj.type == 'C'){
+          tabArticles.push({id_article: articleObj.article, nbr_caisses: this.commandForm.value[`nbArticles${i}`], unite: 0});
+        }else{
+          tabArticles.push({id_article: articleObj.article, nbr_caisses: 0 , unite: this.commandForm.value[`nbArticles${i}`]});
+        }
+        
+        
+      }
+
       const formData = {
-        client: this.commandForm.value.client,
-        article: this.commandForm.value.article,
-        tournee: this.commandForm.value.tournee,
+        id_client: this.commandForm.value.client,
+        articles: tabArticles,
+        id_tournee: this.commandForm.value.tournee,
       };
 
-      const apiUrl = 'http://localhost:8000/login/loginUser';
+      console.log(formData);
+      
 
-      this.http.post(apiUrl, formData)
+      const apiUrl = 'http://localhost:8000/commande/create_commande';
+
+      this.http.post(apiUrl, formData,{
+        headers: {
+          'Authorization': 'Token ' + token, 
+          'Content-Type': 'application/json'
+        }
+        
+      })
         .subscribe(
           (response) => {
             console.log('Réponse de l\'API:', response);

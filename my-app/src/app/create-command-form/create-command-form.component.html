@@ -2,31 +2,32 @@
     <form [formGroup]="commandForm" (ngSubmit)="onSubmit()">
         <div class="selectCommandForm">
             <p>Client:</p>
-            <select formControlName="client" >
-                <option *ngFor="let client of clients" value="{{ client.name }}">{{ client.name }}</option>
+            <select formControlName="client" required>
+                <option value="" disabled selected>Select your option</option>
+                <option *ngFor="let client of clients" value="{{ client.id }}">{{ client.client_nom }}</option>
             </select>
-            <button>Modifier</button>
         </div>
         <div class="selectCommandForm">
             <p>Article:</p>
-            <div *ngFor="let select of nbSelects">
-            <select formControlName="article" >
-                <option *ngFor="let article of articles" value="{{ article.value }}">{{ article.value }}</option>
-            </select>
+            <div *ngFor="let select of nbSelects; let i = index">
+                <select formControlName="article{{ i }}" required>
+                    <option value="" disabled selected>Select your option</option>
+                    <option *ngFor="let article of articles" value="{{ article | json }}">{{ article.nom }} ({{ article.type }})</option>
+                </select>
+                <input required type="number" id="nbArticles" formControlName="nbArticles{{ i }}" name="nbArticles"/>
             </div>
             <button (click)="ajouter1SelectArticle()">ajouter un champ</button>
             <button (click)="enlever1SelectArticle()">enlever un champ</button>
-            <button>Modifier</button>
         </div>
         <div class="selectCommandForm">
             <p>Tournée:</p>
-            <select formControlName="tournee" >
-                <option *ngFor="let tournee of tournees" value="{{ tournee.name }}">{{ tournee.name }}</option>
+            <select formControlName="tournee" required>
+                <option value="" disabled selected>Select your option</option>
+                <option *ngFor="let tournee of tournees" value="{{ tournee.id }}">{{ tournee.nom }}</option>
             </select>
-            <button>Modifier</button>
         </div>
         <div>
-            <button class="commandFormSubmitButton" type="submit" [disabled]="!commandForm.valid">Créer la commande</button>
+            <button class="commandFormSubmitButton" type="submit">Créer la commande</button>
         </div>
     </form>
-</div>
+</div>  
