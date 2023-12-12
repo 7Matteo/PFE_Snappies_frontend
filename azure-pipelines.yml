@@ -3,13 +3,8 @@
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
-# Node.js with Angular
-# Build a Node.js project that uses Angular.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
-
 trigger:
-- main
+- livreurs-list-page
 
 pool:
   vmImage: ubuntu-latest
@@ -17,31 +12,17 @@ pool:
 steps:
 - task: NodeTool@0
   inputs:
-    versionSpec: '20.x'
+    versionSpec: '10.x'
   displayName: 'Install Node.js'
+  
+- task: Npm@1
+  inputs:
+    command: 'custom'
+    customCommand: 'i -g npm@lts'
 
 - script: |
-    cd my-app
     npm install -g @angular/cli
     npm install
-    echo "Current directory contents:"
-    ls -al
-    ng build --configuration development
-    echo "Directory contents after ng build:"
-    ls -al dist/my-app
+    ng build --prod
   displayName: 'npm install and build'
-  
-- script: |
-    echo "Contenu du répertoire de travail :"
-    ls -R $(System.DefaultWorkingDirectory)
-  displayName: 'Afficher le contenu du répertoire de travail'
-  
-- task: AzureStaticWebApp@0
-  inputs:
-    app_location: 'dist'
-    app_build_command: ng build --configuration development
-    cwd: '$(System.DefaultWorkingDirectory)/my-app'
-    azure_static_web_apps_api_token: $(token)
-    deployment_environment: 'developpement'
-    platform: 'node'
-    runtime_version: '20.x'
+
