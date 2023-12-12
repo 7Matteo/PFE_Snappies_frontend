@@ -3,6 +3,7 @@ import { LoginFormComponent } from './LOGIN/login-form/login-form.component';
 import { ArticleComponent } from './ADMIN/article/article.component';
 import { TourneeComponent } from './ADMIN/tournee/tournee.component';
 import { CommandsListComponent } from './ADMIN/commands-list/commands-list.component';
+import { LivreursListComponent } from './ADMIN/livreurs-list/livreurs-list.component';
 import { CreateCommandFormComponent } from './ADMIN/create-command-form/create-command-form.component';
 
 
@@ -31,6 +32,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     LoginFormComponent,
     CommandsListComponent,
     CreateCommandFormComponent,
+    LivreursListComponent,
   ],
   imports: [
     BrowserModule,
